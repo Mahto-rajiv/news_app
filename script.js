@@ -169,7 +169,7 @@ async function notifyVisit() {
       visitTime: new Date().toLocaleString(),
     };
 
-    await fetch("https://your-vercel-app.vercel.app/api/notify-visit", {
+    await fetch("https://news-app-blond-zeta.vercel.app/api/notify-visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(visitorData),
