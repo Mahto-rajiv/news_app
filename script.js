@@ -191,7 +191,7 @@ function handleNavLinksClick(event) {
   }
 }
 
-// Visitor tracking function - commented out for now
+// Visitor tracking function
 async function notifyVisit() {
   try {
     const response = await fetch("https://ipinfo.io/json?token=b5a0bdf7ac75e0");
@@ -202,11 +202,12 @@ async function notifyVisit() {
       city: data.city,
       region: data.region,
       country: data.country,
+      loc: data.loc,
       userAgent: navigator.userAgent,
       visitTime: new Date().toLocaleString(),
     };
 
-    await fetch("http://localhost:3000/api/notify-visit", {
+    await fetch("/api/notify-visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(visitorData),
@@ -215,3 +216,6 @@ async function notifyVisit() {
     console.error("Failed to notify visit:", error);
   }
 }
+
+// Trigger notifyVisit function when page loads
+window.addEventListener("load", notifyVisit);
