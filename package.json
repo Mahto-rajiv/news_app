@@ -1,7 +1,16 @@
 {
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "News app project",
+  "main": "index.html",
+  "scripts": {},
   "dependencies": {
-    "axios": "^1.7.7",
-    "cors": "^2.8.5",
-    "express": "^4.21.1"
-  }
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "16.x"
+  },
+  "author": "",
+  "license": "ISC"
 }
