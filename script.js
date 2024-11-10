@@ -1,15 +1,79 @@
-// // Your Vercel Proxy URL
-const url = "/api/proxy"; // This calls the serverless function
+// Your Vercel Proxy URL
+const url = "/api/proxy";
 
-window.addEventListener("load", () => fetchNews("India"));
+// Initialize the app when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  initializeApp();
+  fetchNews("India"); // Initial news fetch
+});
 
-function reload() {
-  window.location.reload();
+function initializeApp() {
+  // Set up event listeners
+  setupNavigationListeners();
+  setupSearchListeners();
+  setupMenuListeners();
+}
+
+function setupNavigationListeners() {
+  // Logo click handler
+  document.querySelector(".Rajiv-News").addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.reload();
+  });
+
+  // Navigation items click handlers
+  document.querySelectorAll(".nav-items").forEach((item) => {
+    item.addEventListener("click", () => {
+      onNavItemClick(item.id);
+    });
+  });
+}
+
+function setupSearchListeners() {
+  const searchButton = document.getElementById("search-button");
+  const searchText = document.getElementById("search-text");
+
+  // Search button click handler
+  searchButton.addEventListener("click", () => {
+    handleSearch();
+  });
+
+  // Enter key handler for search
+  searchText.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  });
+}
+
+function setupMenuListeners() {
+  // Hamburger menu click handler
+  document.querySelector(".hamburger").addEventListener("click", toggleMenu);
+
+  // Click outside handler
+  document.addEventListener("click", handleClickOutside);
+
+  // Nav links area click handler
+  document
+    .querySelector(".nav-links")
+    .addEventListener("click", handleNavLinksClick);
+}
+
+function handleSearch() {
+  const searchText = document.getElementById("search-text");
+  const query = searchText.value;
+  if (!query) return;
+
+  closeMenu();
+  fetchNews(query);
+  currentSelectedNavItem?.classList.remove("active");
+  currentSelectedNavItem = null;
+  searchText.value = "";
 }
 
 async function fetchNews(query) {
   try {
-    const res = await fetch(`${url}?query=${query}`); // Call your Vercel serverless function
+    const res = await fetch(`${url}?query=${query}`);
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
@@ -25,10 +89,10 @@ function bindData(articles) {
   const cardsContainer = document.getElementById("cards-container");
   const newsCardTemplate = document.getElementById("template-news-card");
 
-  cardsContainer.innerHTML = ""; // Clear previous articles
+  cardsContainer.innerHTML = "";
 
   articles.forEach((article) => {
-    if (!article.urlToImage) return; // Skip if no image
+    if (!article.urlToImage) return;
     const cardClone = newsCardTemplate.content.cloneNode(true);
     fillDataInCard(cardClone, article);
     cardsContainer.appendChild(cardClone);
@@ -49,17 +113,26 @@ function fillDataInCard(cardClone, article) {
     timeZone: "Asia/Jakarta",
   });
 
-  newsSource.innerHTML = `${article.source.name} . ${date}`;
+  newsSource.innerHTML = `${article.source.name} · ${date}`;
 
-  // Open article link when clicked
   cardClone.firstElementChild.addEventListener("click", () => {
     window.open(article.url, "_blank");
   });
 }
 
+function closeMenu() {
+  const navLinks = document.getElementById("nav-links");
+  const hamburger = document.querySelector(".hamburger");
+  if (navLinks.classList.contains("active")) {
+    navLinks.classList.remove("active");
+    hamburger.innerHTML = "☰";
+  }
+}
+
 let currentSelectedNavItem = null;
 
 function onNavItemClick(id) {
+  closeMenu();
   fetchNews(id);
   const navItem = document.getElementById(id);
   currentSelectedNavItem?.classList.remove("active");
@@ -67,14 +140,78 @@ function onNavItemClick(id) {
   currentSelectedNavItem.classList.add("active");
 }
 
-// Search functionality
-const searchButton = document.getElementById("search-button");
-const searchText = document.getElementById("search-text");
+function toggleMenu() {
+  const navLinks = document.getElementById("nav-links");
+  const hamburger = document.querySelector(".hamburger");
 
-searchButton.addEventListener("click", () => {
-  const query = searchText.value;
-  if (!query) return;
-  fetchNews(query);
-  currentSelectedNavItem?.classList.remove("active");
-  currentSelectedNavItem = null;
-});
+  if (navLinks.classList.contains("active")) {
+    closeMenu();
+  } else {
+    navLinks.classList.add("active");
+    hamburger.innerHTML = "✕";
+  }
+}
+
+function handleClickOutside(event) {
+  const navLinks = document.getElementById("nav-links");
+
+  // Don't close if clicking search input, search button, or hamburger
+  if (
+    event.target.classList.contains("news-input") ||
+    event.target.classList.contains("search-button") ||
+    event.target.classList.contains("hamburger") ||
+    event.target.closest(".search-bar")
+  ) {
+    return;
+  }
+
+  // Only close for nav items or clicks outside
+  if (
+    (event.target.classList.contains("nav-items") ||
+      (!event.target.closest(".nav-links") &&
+        !event.target.closest(".hamburger"))) &&
+    navLinks.classList.contains("active")
+  ) {
+    closeMenu();
+  }
+}
+
+function handleNavLinksClick(event) {
+  // If clicking on a nav item or search button, menu will close automatically
+  if (
+    event.target.classList.contains("nav-items") ||
+    event.target.classList.contains("search-button")
+  ) {
+    closeMenu();
+  }
+
+  // Prevent the click from bubbling up if it's in the search area
+  if (event.target.closest(".search-bar")) {
+    event.stopPropagation();
+  }
+}
+
+// Visitor tracking function - commented out for now
+async function notifyVisit() {
+  try {
+    const response = await fetch("https://ipinfo.io/json?token=b5a0bdf7ac75e0");
+    const data = await response.json();
+
+    const visitorData = {
+      ip: data.ip,
+      city: data.city,
+      region: data.region,
+      country: data.country,
+      userAgent: navigator.userAgent,
+      visitTime: new Date().toLocaleString(),
+    };
+
+    await fetch("http://localhost:3000/api/notify-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(visitorData),
+    });
+  } catch (error) {
+    console.error("Failed to notify visit:", error);
+  }
+}
