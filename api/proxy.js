@@ -6,8 +6,8 @@ export default async function handler(req, res) {
   if (!query) {
     return res.status(400).json({ error: "Missing query parameter" });
   }
-
-  const API_KEY = "a870c52cd08d4a75bd3119d39433d18a"; // Your NewsAPI key
+  const API_KEY = process.env.NEWS_API_KEY; // Your NewsAPI key
+  console.log(API_KEY, "lllllllllll");
   const url = `https://newsapi.org/v2/everything?q=${query}&apikey=${API_KEY}`;
 
   try {
