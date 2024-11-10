@@ -1,6 +1,7 @@
 // // Your Vercel Proxy URL
 const url = "/api/proxy"; // This calls the serverless function
-
+import { API_KEY } from "./api/proxy.js";
+console.log(API_KEY);
 window.addEventListener("load", () => fetchNews("India"));
 
 function reload() {
