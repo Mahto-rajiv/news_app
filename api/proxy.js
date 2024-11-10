@@ -91,3 +91,7 @@ export default async function handler(req, res) {
 // app.listen(PORT, () => {
 //   console.log(`Server running on port ${PORT}`);
 // });
+
+export const getApiKey = () => {
+  return API_KEY;
+};
