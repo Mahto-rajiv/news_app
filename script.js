@@ -1,14 +1,79 @@
-// // Your Vercel Proxy URL
-const url = "/api/proxy"; // This calls the serverless function
-window.addEventListener("load", () => fetchNews("India"));
+// Your Vercel Proxy URL
+const url = "/api/proxy";
 
-function reload() {
-  window.location.reload();
+// Initialize the app when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  initializeApp();
+  fetchNews("India"); // Initial news fetch
+});
+
+function initializeApp() {
+  // Set up event listeners
+  setupNavigationListeners();
+  setupSearchListeners();
+  setupMenuListeners();
+}
+
+function setupNavigationListeners() {
+  // Logo click handler
+  document.querySelector(".Rajiv-News").addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.reload();
+  });
+
+  // Navigation items click handlers
+  document.querySelectorAll(".nav-items").forEach((item) => {
+    item.addEventListener("click", () => {
+      onNavItemClick(item.id);
+    });
+  });
+}
+
+function setupSearchListeners() {
+  const searchButton = document.getElementById("search-button");
+  const searchText = document.getElementById("search-text");
+
+  // Search button click handler
+  searchButton.addEventListener("click", () => {
+    handleSearch();
+  });
+
+  // Enter key handler for search
+  searchText.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  });
+}
+
+function setupMenuListeners() {
+  // Hamburger menu click handler
+  document.querySelector(".hamburger").addEventListener("click", toggleMenu);
+
+  // Click outside handler
+  document.addEventListener("click", handleClickOutside);
+
+  // Nav links area click handler
+  document
+    .querySelector(".nav-links")
+    .addEventListener("click", handleNavLinksClick);
+}
+
+function handleSearch() {
+  const searchText = document.getElementById("search-text");
+  const query = searchText.value;
+  if (!query) return;
+
+  closeMenu();
+  fetchNews(query);
+  currentSelectedNavItem?.classList.remove("active");
+  currentSelectedNavItem = null;
+  searchText.value = "";
 }
 
 async function fetchNews(query) {
   try {
-    const res = await fetch(`${url}?query=${query}`); // Call your Vercel serverless function
+    const res = await fetch(`${url}?query=${query}`);
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
@@ -48,7 +113,7 @@ function fillDataInCard(cardClone, article) {
     timeZone: "Asia/Jakarta",
   });
 
-  newsSource.innerHTML = `${article.source.name} . ${date}`;
+  newsSource.innerHTML = `${article.source.name} · ${date}`;
 
   cardClone.firstElementChild.addEventListener("click", () => {
     window.open(article.url, "_blank");
@@ -75,32 +140,6 @@ function onNavItemClick(id) {
   currentSelectedNavItem.classList.add("active");
 }
 
-const searchButton = document.getElementById("search-button");
-const searchText = document.getElementById("search-text");
-
-// Modified search button handler
-searchButton.addEventListener("click", () => {
-  const query = searchText.value;
-  if (!query) return;
-  closeMenu();
-  fetchNews(query);
-  currentSelectedNavItem?.classList.remove("active");
-  currentSelectedNavItem = null;
-  searchText.value = "";
-});
-
-// Modified Enter key handler
-searchText.addEventListener("keyup", (event) => {
-  if (event.key === "Enter") {
-    const query = searchText.value;
-    if (!query) return;
-    closeMenu();
-    fetchNews(query);
-    currentSelectedNavItem?.classList.remove("active");
-    currentSelectedNavItem = null;
-  }
-});
-
 function toggleMenu() {
   const navLinks = document.getElementById("nav-links");
   const hamburger = document.querySelector(".hamburger");
@@ -113,8 +152,7 @@ function toggleMenu() {
   }
 }
 
-// Modified click outside handler
-document.addEventListener("click", function (event) {
+function handleClickOutside(event) {
   const navLinks = document.getElementById("nav-links");
 
   // Don't close if clicking search input, search button, or hamburger
@@ -136,44 +174,29 @@ document.addEventListener("click", function (event) {
   ) {
     closeMenu();
   }
-});
+}
 
-// Handle clicks within the nav-links area
-document
-  .querySelector(".nav-links")
-  .addEventListener("click", function (event) {
-    // Only close for nav items, not for search input or search area
-    if (event.target.classList.contains("nav-items")) {
-      closeMenu();
-    }
+function handleNavLinksClick(event) {
+  // If clicking on a nav item or search button, menu will close automatically
+  if (
+    event.target.classList.contains("nav-items") ||
+    event.target.classList.contains("search-button")
+  ) {
+    closeMenu();
+  }
 
-    // Prevent the click from bubbling up if it's in the search area
-    if (event.target.closest(".search-bar")) {
-      event.stopPropagation();
-    }
-  });
+  // Prevent the click from bubbling up if it's in the search area
+  if (event.target.closest(".search-bar")) {
+    event.stopPropagation();
+  }
+}
 
-// Handle clicks within the nav-links area
-document
-  .querySelector(".nav-links")
-  .addEventListener("click", function (event) {
-    // If clicking on a nav item or search button, menu will close automatically
-    if (
-      event.target.classList.contains("nav-items") ||
-      event.target.classList.contains("search-button")
-    ) {
-      closeMenu();
-    }
-  });
-
-//Todo: Function to fetch visitor details and send to server
+// Visitor tracking function - commented out for now
 async function notifyVisit() {
   try {
-    // Collect basic visitor information
-    const response = await fetch("https://ipinfo.io/json?token=b5a0bdf7ac75e0"); // Use IPInfo or another IP API for location data
+    const response = await fetch("https://ipinfo.io/json?token=YOUR_TOKEN");
     const data = await response.json();
 
-    // Prepare data to send
     const visitorData = {
       ip: data.ip,
       city: data.city,
@@ -183,7 +206,6 @@ async function notifyVisit() {
       visitTime: new Date().toLocaleString(),
     };
 
-    // Send data to your server
     await fetch("http://localhost:3000/api/notify-visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -193,6 +215,3 @@ async function notifyVisit() {
     console.error("Failed to notify visit:", error);
   }
 }
-
-// Trigger notifyVisit function when page loads
-// window.addEventListener("load", notifyVisit);

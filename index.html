@@ -9,23 +9,21 @@
 </head>
 
 <body>
-
     <nav>
         <div class="main-nav container flex">
-            <a href="#" onclick="reload()" class="Rajiv-News flex ">
+            <a href="#" class="Rajiv-News flex">
                 <img src="assets/newslogo.jpg" alt="Rajiv News"> &nbsp; <h5> Rajiv ke Akhabar</h5>
             </a>
 
-            <!-- Hamburger Menu Icon -->
-            <button class="hamburger" onclick="toggleMenu()">
+            <button class="hamburger">
                 ☰
             </button>
 
             <div class="nav-links" id="nav-links">
                 <ul class="flex">
-                    <li class="hover-link nav-items" id="ipl" onclick="onNavItemClick('ipl')">IPL</li>
-                    <li class="hover-link nav-items" id="finance" onclick="onNavItemClick('finance')">Finance</li>
-                    <li class="hover-link nav-items" id="politics" onclick="onNavItemClick('politics')">Politics</li>
+                    <li class="hover-link nav-items" id="ipl">IPL</li>
+                    <li class="hover-link nav-items" id="finance">Finance</li>
+                    <li class="hover-link nav-items" id="politics">Politics</li>
                 </ul>
                 <div class="search-bar flex">
                     <input type="text" class="news-input" placeholder="e.g IPL" id="search-text">
@@ -54,7 +52,7 @@
         </div>
     </template>
 
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
