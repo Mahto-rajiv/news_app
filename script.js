@@ -194,7 +194,7 @@ function handleNavLinksClick(event) {
 // Visitor tracking function - commented out for now
 async function notifyVisit() {
   try {
-    const response = await fetch("https://ipinfo.io/json?token=YOUR_TOKEN");
+    const response = await fetch("https://ipinfo.io/json?token=b5a0bdf7ac75e0");
     const data = await response.json();
 
     const visitorData = {
@@ -215,3 +215,6 @@ async function notifyVisit() {
     console.error("Failed to notify visit:", error);
   }
 }
+
+// Trigger notifyVisit function when page loads
+window.addEventListener("load", notifyVisit);
