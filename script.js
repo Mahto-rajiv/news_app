@@ -1,5 +1,5 @@
 // script.js
-const url = "https://news-app-blond-zeta.vercel.app/api/get-news";
+const url = "https://news-app-rajiv-mahtos-projects.vercel.app/api/get-news";
 
 window.addEventListener("load", () => fetchNews("India"));
 
@@ -169,11 +169,14 @@ async function notifyVisit() {
       visitTime: new Date().toLocaleString(),
     };
 
-    await fetch("https://news-app-blond-zeta.vercel.app/api/notify-visit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(visitorData),
-    });
+    await fetch(
+      "https://news-app-rajiv-mahtos-projects.vercel.app/api/notify-visit",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(visitorData),
+      }
+    );
   } catch (error) {
     console.error("Failed to notify visit:", error);
   }
