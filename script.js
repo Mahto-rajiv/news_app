@@ -195,4 +195,4 @@ async function notifyVisit() {
 }
 
 // Trigger notifyVisit function when page loads
-window.addEventListener("load", notifyVisit);
+// window.addEventListener("load", notifyVisit);
