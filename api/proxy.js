@@ -92,6 +92,7 @@ export default async function handler(req, res) {
 //   console.log(`Server running on port ${PORT}`);
 // });
 
-export const getApiKey = () => {
-  return API_KEY;
-};
+function getApiKey() {
+  return API_KEY; // Or some logic to fetch the API key
+}
+module.exports.getApiKey = getApiKey;
